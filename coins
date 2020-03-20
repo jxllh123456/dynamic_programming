@@ -1,0 +1,74 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+int helper(int n);
+int helper_memo(int n,vector<int>& memo);
+int helper_dp(vector<int>& dp,int n);
+const vector<int> coins{1,5,10,20,50,100};
+
+int coincharge(int n){
+  int result;
+  result = helper(n);
+  return result;
+}
+
+// params n: 需要凑的钱数 --自变量n
+// return type: 凑够n至少需要几张货币 --因变量f(n)
+int helper(int n){  
+ int answer=9999999;
+ if(n==0) return 0; 
+ for(auto coin:coins){
+   if(n-coin<0) continue;
+   // 注意这里answer保存的是上一个子问题中的值，helper(n-coin) 返回当前这个子问题的值
+   answer = min(answer,helper(n-coin))+1;
+ }
+ return answer;
+}
+
+int coincharge_memo(int n){
+  int result;
+  vector<int> memo(n+1,0);
+  result = helper_memo(n,memo);
+  return result;
+}
+
+int helper_memo(int n,vector<int>& memo){
+ int answer = 9999999;
+ if(n==0) return 0;
+ if(memo[n]!=0) return memo[n];
+ for(auto coin:coins){
+   if(n-coin<0) continue;
+   answer = min(answer,helper_memo(n-coin,memo))+1;
+ }
+ // 记录本轮计算的答案
+ memo[n] = answer;
+ return memo[n];
+}
+
+int coincharge_dp(int n){
+ int result;
+ // dp中的初始值设置为一个较大的值,为了在初次min运算取到一个较小的值
+ vector<int> dp(n+1,9999999);
+ result = helper_dp(dp,n);
+ return result;
+}
+
+int helper_dp(vector<int>& dp,int n){ 
+ dp[0]=0;
+ //注意这里的dp.size()的值n+1，即，保证了i的最大值可以取到n
+ //效果等同于 i<=n
+ for(int i=1;i<dp.size();i++){// 外层循环表示当前所要凑的钱的数额,由上一个程序的自顶向下的递归，改为自底向上的循环
+   // 内层for 求当前所要凑的数额的所有子问题的最小值
+   for(int coin:coins){
+     if(i-coin<0) continue;
+     // 判断哪一个子问题最优，然后，将它的值赋值给dp[i]
+     dp[i]= min(dp[i],dp[i-coin])+1;
+  }
+ } 
+  return dp[n];
+}
+
+
+
+

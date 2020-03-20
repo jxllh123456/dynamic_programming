@@ -1,0 +1,83 @@
+#include<iostream>
+#include<vector>
+#include<ctime>
+
+// clock_t start,finish,duration;
+// start = clock();
+// finish = clock();
+// duration = finish - start;
+// cout << "time consume: "<< duration <<endl;
+using namespace std;
+unsigned helper_hard(int n);
+unsigned helper_memo(vector<int>& memo, int n);
+unsigned helper_dp(vector<int>& dp,int n);
+
+// main 函数调用,拿到用户输入，给用户返回结果，并不做具体计算使用.
+unsigned fibonacci(int n){
+   unsigned result;
+    clock_t start,finish,duration;
+    start = clock();
+   result = helper_hard(n);
+    finish = clock();
+    duration = finish - start;
+    cout << "normal time consume:" << duration << endl;
+   return result;
+}
+
+// 真正执行计算的函数
+unsigned helper_hard(int n){
+  unsigned result;
+  if(n==1||n==2) return 1;
+//  cout << "i'm calculating number :" << n << endl;
+  result = helper_hard(n-1)+helper_hard(n-2);
+  return result;
+}
+
+unsigned fibonacci_memo(int n){
+   clock_t start,finish,duration;
+  vector<int> memo(n+1,0);
+  memo[1]= memo[2]=1;
+   start = clock();
+  unsigned result=helper_memo(memo,n);
+   finish = clock();
+   duration = finish - start;
+   cout << "memo time consume" << duration << endl;
+  return result;
+}
+
+unsigned helper_memo(vector<int>& memo,int n){
+  unsigned result;
+  if(memo[n]==0)
+     memo[n] = helper_memo(memo,n-1)+helper_memo(memo,n-2);
+  result = memo[n]; 
+  return result;   
+}
+
+// 其实最终的目的都是构建记录元素的容器，只不过上面的方法用递归的方式构建，下面的方法用循环的方式构建，递归还需要额外的栈帧
+unsigned fibonacci_dp(int n){
+  unsigned result;
+  vector<int> dp(n+1,0);
+  dp[1]=dp[2]=1;
+  result = helper_dp(dp,n);
+  return result;  
+}
+
+unsigned helper_dp(vector<int>& dp,int n){
+  // 或者可以写成 i<=n
+  for(int i=3;i<dp.size();i++){
+   dp[i]=dp[i-1]+dp[i-2];
+  }
+  return dp[n];
+}
+
+
+
+
+
+
+
+
+
+
+
+
